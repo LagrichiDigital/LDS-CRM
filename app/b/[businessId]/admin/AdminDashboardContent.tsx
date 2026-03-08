@@ -16,9 +16,7 @@ import {
   getWeekDateStrings,
   isScheduleOnDate,
 } from "@/lib/utils";
-import { Appointment } from "@/types/appwrite.types";
-import { Business } from "@/types/appwrite.types";
-import { Service } from "@/types/appwrite.types";
+import { Appointment, Business, Service } from "@/types/appwrite.types";
 
 type StatusFilter = "scheduled" | "pending" | "completed";
 
@@ -47,7 +45,7 @@ export function AdminDashboardContent({
   const [showWholeWeek, setShowWholeWeek] = useState(false);
   const [viewMode, setViewMode] = useState<"table" | "week">("table");
 
-  const { dayAppointments, dayCounts, filtered, totalPendingCount, earningsToday, earningsNext7Days, weekDateRangeLabel } = useMemo(() => {
+  const { dayCounts, filtered, totalPendingCount, earningsToday, earningsNext7Days, weekDateRangeLabel } = useMemo(() => {
     const totalPending = appointments.filter((a) => a.status === "pending").length;
     const useAllDatesForPending = showAllDatesForPending && selectedStatus === "pending";
     const weekDates = getWeekDateStrings(selectedDate, timezone);

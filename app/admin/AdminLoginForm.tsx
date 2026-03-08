@@ -1,13 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 
 import { Input } from "@/components/ui/input";
 import { loginWithAppwriteAuth } from "@/lib/actions/admin-auth.actions";
 
 export function AdminLoginForm({ errorFromUrl }: { errorFromUrl?: string }) {
-  const router = useRouter();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");

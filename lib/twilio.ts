@@ -4,7 +4,6 @@ import twilio from "twilio";
 
 const accountSid = process.env.TWILIO_ACCOUNT_SID;
 const authToken = process.env.TWILIO_AUTH_TOKEN;
-const fromNumber = process.env.TWILIO_PHONE_NUMBER;
 
 /** Send WhatsApp message to a guest's phone number. Uses Twilio WhatsApp Sandbox for testing. */
 export async function sendWhatsAppToPhone(toPhone: string, body: string) {
