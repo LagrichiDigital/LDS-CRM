@@ -75,7 +75,7 @@ export default async function AdminClientProfilePage({
     (a: { clientId?: string | null }) => a.clientId === clientId
   );
   const guestAppointments = (appointmentData.documents ?? []).filter(
-    (a: { guestEmail?: string }) =>
+    (a: { guestEmail?: string; clientId?: string | null }) =>
       !a.clientId && a.guestEmail?.toLowerCase() === client.email?.toLowerCase()
   );
   const allRelevantAppointments = [...clientAppointments, ...guestAppointments];
