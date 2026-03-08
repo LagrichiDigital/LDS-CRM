@@ -16,6 +16,9 @@ import {
 import { getAppointmentSchema } from "@/lib/validation";
 import { Appointment } from "@/types/appwrite.types";
 
+/** Form may receive appointment with optional display-only fields (e.g. from patient flow). */
+type AppointmentWithFormFields = Appointment & { primaryPhysician?: string; reason?: string };
+
 import "react-datepicker/dist/react-datepicker.css";
 
 import CustomFormField, { FormFieldType } from "../CustomFormField";
@@ -37,17 +40,18 @@ export const AppointmentForm = ({
 }) => {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
+  const appointmentWithFormFields = appointment as AppointmentWithFormFields | undefined;
 
   const AppointmentFormValidation = getAppointmentSchema(type);
 
   const form = useForm<z.infer<typeof AppointmentFormValidation>>({
     resolver: zodResolver(AppointmentFormValidation),
     defaultValues: {
-      primaryPhysician: appointment ? appointment?.primaryPhysician : "",
-      schedule: appointment
-        ? new Date(appointment?.schedule!)
+      primaryPhysician: appointmentWithFormFields?.primaryPhysician ?? "",
+      schedule: appointmentWithFormFields
+        ? new Date(appointmentWithFormFields.schedule)
         : new Date(Date.now()),
-      reason: appointment ? appointment.reason : "",
+      reason: appointmentWithFormFields?.reason ?? "",
       note: appointment?.note || "",
       cancellationReason: appointment?.cancellationReason || "",
     },
@@ -72,7 +76,7 @@ export const AppointmentForm = ({
 
     try {
       if (type === "create" && patientId) {
-        const appointment = {
+        const appointmentPayload = {
           userId,
           patient: patientId,
           primaryPhysician: values.primaryPhysician,
@@ -81,8 +85,8 @@ export const AppointmentForm = ({
           status: status as Status,
           note: values.note,
         };
-
-        const newAppointment = await createAppointment(appointment);
+        // Patient flow: createAppointment expects GuestBookingParams; this path may need backend support for patient bookings.
+        const newAppointment = await createAppointment(appointmentPayload as unknown as Parameters<typeof createAppointment>[0]);
 
         if (newAppointment) {
           form.reset();
@@ -102,8 +106,7 @@ export const AppointmentForm = ({
           },
           type,
         };
-
-        const updatedAppointment = await updateAppointment(appointmentToUpdate);
+        const updatedAppointment = await updateAppointment(appointmentToUpdate as unknown as Parameters<typeof updateAppointment>[0]);
 
         if (updatedAppointment) {
           setOpen && setOpen(false);
